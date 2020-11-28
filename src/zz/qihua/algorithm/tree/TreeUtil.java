@@ -77,8 +77,9 @@ public class TreeUtil {
 		for(int i=1;i<values.length;i++) {
 			Node<Integer> newNode=new Node<Integer>(values[i]);
 			BSTreeAdd(head, newNode);
-			Optional<Node<Integer>> unbalancedNode=newNode.parent.findUnbalancedNode(newNode);
-			head=unbalancedNode.map(Node::rotate).orElse(head);
+//			Optional<Node<Integer>> unbalancedNode=newNode.parent.findUnbalancedNode(newNode);
+//			head=unbalancedNode.map(Node::rotate).orElse(head);
+			head=newNode.balance().orElse(head);
 		}
 		return head;
 	}

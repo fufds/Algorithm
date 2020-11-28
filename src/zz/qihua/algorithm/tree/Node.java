@@ -20,7 +20,12 @@ public class Node<T> {
 		this(null,null,value);
 	}
 	
-	
+	public void setChild(boolean left,Node<T> child) {
+		if(left)
+			setLeft(child);
+		else
+			setRight(child);
+	}
 	public Node<T> getLeft() {
 		return left;
 	}
@@ -47,6 +52,9 @@ public class Node<T> {
 			
 	}
 
+	public Optional<Node<T>> balance(){
+		return parent.findUnbalancedNode(this).map(Node::rotate);
+	}
 	public Optional<Node<T>> findUnbalancedNode(Node<T> son) {
 		if(son==left)
 			balanceFactor++;
@@ -64,10 +72,12 @@ public class Node<T> {
 			if(left.balanceFactor==-1)
 				left.leftRotation();
 			newHead=rightRotation();
+			updateBalanceFactor(parent.left);
 		}else if(balanceFactor==-2) {
 			if(right.balanceFactor==1)
 				right.rightRotation();
 			newHead=leftRotation();
+			updateBalanceFactor(parent.right);
 		}else {
 			System.out.println("illegal state node!");
 		}
@@ -75,6 +85,14 @@ public class Node<T> {
 		parent.balanceFactor=0;
 		return newHead;
 	}
+	private void updateBalanceFactor(Node<T> node) {
+		node.balanceFactor=0;
+		if(node.left!=null)
+			node.balanceFactor++;
+		if(node.right!=null)
+			node.balanceFactor--;
+	}
+
 	public Node<T> leftRotation() {
 		Node<T> pNode=parent;
 		Node<T> newHead=right;
@@ -82,11 +100,13 @@ public class Node<T> {
 		setRight(newRight);
 		newHead.setLeft(this);
 		if(pNode==null) {
+			newHead.parent=null;
 			return newHead;
 		}else {
-			pNode.setLeft(newHead);
+			pNode.setChild(this==pNode.left, newHead);
 			return null;
 		}
+		
 			
 	}
 	public Node<T> rightRotation() {
@@ -96,9 +116,10 @@ public class Node<T> {
 		setLeft(newLeft);
 		newHead.setRight(this);;
 		if(pNode==null) {
+			newHead.parent=null;
 			return newHead;
 		}else {
-			pNode.setRight(newHead);
+			pNode.setChild(this==pNode.left, newHead);
 			return null;
 		}
 			
